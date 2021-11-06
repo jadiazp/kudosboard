@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Board;
+use App\Models\Kudo;
 use Exception;
 use Illuminate\Http\Request;
 
-class BoardController extends Controller
+class KudoController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +15,8 @@ class BoardController extends Controller
      */
     public function index()
     {
-      $boards = Board::all();
-      return response()->json($boards);
+      $kudos = Kudo::all();
+      return response()->json($kudos);
     }
 
     /**
@@ -28,19 +28,20 @@ class BoardController extends Controller
     public function store(Request $request)
     {
       $request->validate([
-        'title' => 'required|max:255',
+        'iduser' => 'required',
+        'idboard' => 'required',
         'description' => 'required'
       ]);
 
-      $board = new Board([
-        'title' => $request->get('title'),
+      $kudo = new Kudo([
+        'iduser' => $request->get('iduser'),
+        'idboard' => $request->get('idboard'),
         'description' => $request->get('description'),
-        'photo' => $request->get('photo')
       ]);
 
       try{
-        $board->save();
-        return response()->json($board);
+        $kudo->save();
+        return response()->json($kudo);
       }catch(Exception $e){
         return response()->json([
           'status' => 'error',
@@ -58,8 +59,8 @@ class BoardController extends Controller
      */
     public function show($id)
     {
-      $board = Board::findOrFail($id);
-      return response()->json($board);
+      $kudo = Kudo::findOrFail($id);
+      return response()->json($kudo);
     }
 
     /**
@@ -71,20 +72,23 @@ class BoardController extends Controller
      */
     public function update(Request $request, $id)
     {
-      $board = Board::findOrFail($id);
+      $kudo = Kudo::findOrFail($id);
 
       $request->validate([
-        'title' => 'required|max:255',
+        'iduser' => 'required',
+        'idboard' => 'required',
         'description' => 'required'
       ]);
 
-      $board->title = $request->get('title');
-      $board->description = $request->get('description');
+      $kudo->iduser = $request->get('iduser');
+      $kudo->idboard = $request->get('idboard');
+      $kudo->description = $request->get('description');
 
       try{
-        $board->save();
-        return response()->json($board);
-      }catch(Exception $e){
+        $kudo->save();
+        return response()->json($kudo);
+      }
+      catch(Exception $e){
         return response()->json([
           'status' => 'error',
           'error' => $e->getMessage()
@@ -100,11 +104,12 @@ class BoardController extends Controller
      */
     public function destroy($id)
     {
-      $board = Board::findOrFail($id);
+      $kudo = Kudo::findOrFail($id);
       try{
-        $board->delete();
-        return response()->json($board::all());
-      }catch(Exception $e){
+        $kudo->delete();
+        return response()->json($kudo::all());
+      }
+      catch(Exception $e){
         return response()->json([
           'status' => 'error',
           'error' => $e->getMessage()
