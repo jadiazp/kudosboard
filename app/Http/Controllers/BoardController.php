@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Board;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BoardController extends Controller
 {
@@ -15,8 +16,17 @@ class BoardController extends Controller
      */
     public function index()
     {
-      $boards = Board::all();
-      return response()->json($boards);
+      //$boards = Board::all();
+      $results = DB::select('SELECT
+      b.id,
+      b.title,
+      b.description,
+      count(k.description) as count
+      FROM kudosboard.boards b
+      inner join kudosboard.kudos k
+      on k.idboard = b.id
+      group by b.id;');
+      return response()->json($results);
     }
 
     /**
@@ -58,8 +68,49 @@ class BoardController extends Controller
      */
     public function show($id)
     {
-      $board = Board::findOrFail($id);
-      return response()->json($board);
+      //$board = Board::findOrFail($id);
+      $results = DB::select('SELECT
+      b.title,
+      b.description as board_description,
+      u.firstname,
+      u.lastname,
+      k.description
+      FROM kudosboard.boards b
+      left join kudosboard.kudos k
+      on b.id = k.idboard
+      left join kudosboard.users u
+      on u.id = k.iduser
+      where b.id = ' . $id . '
+      order by k.created_at desc;');
+      $result = [];
+      $kudos = [];
+
+      if($results && count($results) > 0){
+        $board = array(
+          'board_title' => $results[0]->title,
+          'board_description' => $results[0]->board_description,
+        );
+
+        for($x=0;$x<count($results);$x++){
+          if($results[$x]->firstname != null){
+            $kudo = [
+              'firstname' => $results[$x]->firstname,
+              'lastname' => $results[$x]->lastname,
+              'description' => $results[$x]->description
+            ];
+            array_push($kudos, $kudo);
+          }
+        }
+
+        $data = [
+          'board' => $board,
+          'kudos' => $kudos
+        ];
+
+        array_push($result, $data);
+      }
+
+      return response()->json($result);
     }
 
     /**
