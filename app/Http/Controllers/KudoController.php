@@ -30,6 +30,7 @@ class KudoController extends Controller
       $request->validate([
         'iduser' => 'required',
         'idboard' => 'required',
+        'iduserto' => 'required',
         'description' => 'required'
       ]);
 
@@ -37,6 +38,7 @@ class KudoController extends Controller
         'iduser' => $request->get('iduser'),
         'idboard' => $request->get('idboard'),
         'description' => $request->get('description'),
+        'iduserTo' => $request->get('iduserto'),
       ]);
 
       try{
@@ -77,12 +79,14 @@ class KudoController extends Controller
       $request->validate([
         'iduser' => 'required',
         'idboard' => 'required',
-        'description' => 'required'
+        'description' => 'required',
+        'iduserto' => 'required',
       ]);
 
       $kudo->iduser = $request->get('iduser');
       $kudo->idboard = $request->get('idboard');
       $kudo->description = $request->get('description');
+      $kudo->iduserTo = $request->get('iduserto');
 
       try{
         $kudo->save();

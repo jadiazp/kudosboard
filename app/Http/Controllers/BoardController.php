@@ -23,7 +23,7 @@ class BoardController extends Controller
       b.description,
       count(k.description) as count
       FROM kudosboard.boards b
-      inner join kudosboard.kudos k
+      left join kudosboard.kudos k
       on k.idboard = b.id
       group by b.id;');
       return response()->json($results);
@@ -69,19 +69,22 @@ class BoardController extends Controller
     public function show($id)
     {
       //$board = Board::findOrFail($id);
-      $results = DB::select('SELECT
+      $results = DB::select("SELECT
       b.title,
       b.description as board_description,
       u.firstname,
       u.lastname,
-      k.description
+      k.description,
+      concat(u2.firstname, ' ', u2.lastname) as assigned
       FROM kudosboard.boards b
       left join kudosboard.kudos k
       on b.id = k.idboard
       left join kudosboard.users u
       on u.id = k.iduser
-      where b.id = ' . $id . '
-      order by k.created_at desc;');
+      left join kudosboard.users u2
+      on u2.id = k.iduserto
+      where b.id = " . $id . "
+      order by k.created_at desc;");
       $result = [];
       $kudos = [];
 
@@ -93,10 +96,15 @@ class BoardController extends Controller
 
         for($x=0;$x<count($results);$x++){
           if($results[$x]->firstname != null){
+            $assigned = '';
+            if($results[$x]->assigned != null){
+              $assigned = $results[$x]->assigned;
+            }
             $kudo = [
               'firstname' => $results[$x]->firstname,
               'lastname' => $results[$x]->lastname,
-              'description' => $results[$x]->description
+              'description' => $results[$x]->description,
+              'assigned' => $assigned
             ];
             array_push($kudos, $kudo);
           }

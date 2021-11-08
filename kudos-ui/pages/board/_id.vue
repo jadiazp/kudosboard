@@ -6,17 +6,20 @@
         <b-button @click="newKudo" type="is-dark">New Kudo</b-button>
       </div>
       <div class="columns is-desktop is-multiline mt-2">
-        <div class="column is-4">
+        <div class="column">
           <div class="board-info">
             <p><h2 class="title is-4 is-white">{{ this.$store.state.boardInfo.board_title }}</h2></p>
             <p class="subtitle is-5 is-grey">{{ this.$store.state.boardInfo.board_description }}</p>
           </div>
         </div>
-        <div class="column is-8">
+        <div class="column">
           <div class="board-kudos" v-for="kudo in this.$store.state.kudosInfo">
-            <h5 class="title is-5 is-dark mb-0">{{ kudo.firstname }} {{ kudo.lastname }}</h5>
+            <h5 class="title is-5 is-dark mb-0">{{ kudo.description }}</h5>
             <p>
-              {{ kudo.description }}
+              Assigned user: {{ kudo.assigned ? kudo.assigned : '-' }}
+            </p>
+            <p>
+              Registrant user: {{ kudo.firstname }} {{ kudo.lastname }}
             </p>
           </div>
         </div>

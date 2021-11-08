@@ -11,6 +11,7 @@ class Kudo extends Model
   protected $fillable = [
     'iduser',
     'idboard',
-    'description'
+    'description',
+    'iduserTo'
   ];
 }
