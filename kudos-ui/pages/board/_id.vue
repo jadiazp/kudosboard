@@ -13,7 +13,7 @@
           </div>
         </div>
         <div class="column">
-          <div class="board-kudos" v-for="kudo in this.$store.state.kudosInfo">
+          <div class="board-kudos" v-for="kudo in this.kudosInfo">
             <h5 class="title is-5 is-dark mb-0">{{ kudo.description }}</h5>
             <p>
               Assigned user: {{ kudo.assigned ? kudo.assigned : '-' }}
@@ -28,30 +28,48 @@
   </section>
 </template>
 <script>
+import Pusher from 'pusher-js';
 export default {
   middleware: 'auth',
   data() {
     return {
       board: [],
       kudos: [],
+      kudosInfo: []
     }
   },
 
-  async asyncData({ app, params, store }) {
-    const token = 'Bearer ' + store.state.token;
-    const response = await app.$axios.get(`http://localhost/api/boards/${params.id}`, {
+  async mounted(){
+    const token = 'Bearer ' + this.$store.state.token;
+    const selectedBoard = this.$store.state.selectedBoard;
+    const response = await this.$axios.get(`http://localhost/api/boards/${selectedBoard}`, {
       headers:{
         'Authorization': token
       }
     });
-    const board = response.data[0].board;
-    const kudos = response.data[0].kudos;
-    store.commit('setBoardInfo', board);
-    store.commit('setKudosInfo', kudos);
-  },
+    if(response.data.status == "Token is Expired"){
+      this.$store.commit('setUser', "");
+      this.$store.commit('setToken', "");
+      this.$router.push('/');
+    }else{
+      const board = response.data[0].board;
+      const kudos = response.data[0].kudos;
+      this.$store.commit('setBoardInfo', board);
+      this.$store.commit('setKudosInfo', kudos);
+    }
 
-  async mounted(){
+    this.kudosInfo = this.$store.state.kudosInfo;
 
+    var pusher = new Pusher('07289873f974d66ebce6', {
+      cluster: 'us2'
+    });
+
+    var channel = pusher.subscribe('kudosapp');
+    channel.bind('App\\Events\\KudosAddedEvent', data => {
+      if(data.kudo.length > 0){
+        this.kudosInfo.unshift(data.kudo[0].kudos[0]);
+      }
+    });
   },
 
   methods:{

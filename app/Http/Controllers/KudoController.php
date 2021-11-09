@@ -5,9 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Kudo;
 use Exception;
 use Illuminate\Http\Request;
+use App\Events\KudosAddedEvent;
 
 class KudoController extends Controller
 {
+    private $board;
+
+    public function __construct()
+    {
+      $this->board = new BoardController();
+    }
     /**
      * Display a listing of the resource.
      *
@@ -43,6 +50,10 @@ class KudoController extends Controller
 
       try{
         $kudo->save();
+
+        $board = $this->board->getOne($request->get('idboard'));
+        event(new KudosAddedEvent($board));
+
         return response()->json($kudo);
       }catch(Exception $e){
         return response()->json([
