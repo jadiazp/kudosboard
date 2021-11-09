@@ -14,7 +14,7 @@ export default {
   components: { KudosList },
   middleware: 'auth',
   async mounted(){
-    console.log(this.$store.state);
+
   }
 }
 </script>

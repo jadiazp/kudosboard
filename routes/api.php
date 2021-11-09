@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BoardController;
 use App\Http\Controllers\KudoController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 
 /*
@@ -39,4 +40,5 @@ Route::group([
 Route::group(['middleware' => ['jwt.verify']], function() {
   Route::apiResource('/boards', BoardController::class);
   Route::apiResource('/kudos', KudoController::class);
+  Route::apiResource('/users', UserController::class);
 });

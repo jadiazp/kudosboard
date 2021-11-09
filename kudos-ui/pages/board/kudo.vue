@@ -11,6 +11,20 @@
           <form method="post" @submit.prevent="saveKudo">
             <div class="field">
               <div class="control">
+                <b-select placeholder="Select a user" expanded @input="selectUser" required>
+                  <option
+                    v-model="selectedUser"
+                    v-for="user in users"
+                    :value="user.id"
+                    :key="user.id">
+                    {{ user.name }}
+                  </option>
+                </b-select>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="control">
                 <b-field label="Comment">
                   <b-input v-model="comment" required maxlength="200" type="textarea"></b-input>
                 </b-field>
@@ -34,27 +48,40 @@ export default {
     return {
       comment: '',
       isLoading: false,
-      isFullPage: true
+      isFullPage: true,
+      users: [],
+      selectedUser: ''
     };
+  },
+
+  props: {
+    options: {
+      type: Array,
+    },
+  },
+
+  async created(){
+    this.users = this.$store.state.usersList;
   },
 
   methods:{
     async saveKudo() {
       this.isLoading = true;
-      const iduser = this.$store.state.user.id;
+      const iduserRegistrant = this.$store.state.user.id;
       const idboard = this.$store.state.selectedBoard;
       const token = `Bearer ${this.$store.state.token}`;
       const data = {
-        iduser: iduser,
+        iduser: iduserRegistrant,
         idboard: idboard,
-        description: this.comment
+        description: this.comment,
+        iduserto: this.selectedUser
       };
       const response = await this.$axios.post('http://localhost/api/kudos', data, {
         headers:{
           'Authorization': token
         }
       });
-      console.log(response);
+
       if(response.statusText == "OK"){
         this.$router.push(`/board/${idboard}`);
       }
@@ -63,6 +90,10 @@ export default {
     async returnList(){
       this.isLoading = true;
       this.$router.back();
+    },
+
+    async selectUser(user){
+      this.selectedUser = user;
     }
   }
 }

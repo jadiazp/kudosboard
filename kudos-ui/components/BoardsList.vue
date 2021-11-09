@@ -2,7 +2,7 @@
   <section class="boards-list">
     <div class="container">
       <div class="columns is-desktop is-multiline gaps">
-        <div @click="chooseBoard(board.id)" v-for="board in boards" class="column board-item is-clickable">
+        <div @click="chooseBoard(board.id)" v-for="board in boards" class="column mb-4 board-item is-clickable">
           <div class="vertical-align">
             <h2 class="is-4"><b>{{ board.title }}</b></h2>
             <div class="is-6">{{ board.description }}</div>

@@ -78,9 +78,7 @@ export default {
           email: this.email,
           password: this.password,
         });
-        //this.$router.push('/');
         const status = response.data.status;
-        this.isLoading = false;
 
         if(status == 'error'){
           this.error = response.data.message;
@@ -90,12 +88,19 @@ export default {
 
           this.$store.commit('setUser', this.userObject);
           this.$store.commit('setToken', this.token);
+
+          //Get list of users
+          const response_users = await this.$axios.get('http://localhost/api/users', {
+            headers:{
+              'Authorization': `Bearer ${this.token}`
+            }
+          });
+          this.$store.commit('setUsersList', response_users.data);
+          this.isLoading = false;
           this.$router.push('/');
 
-          console.log(this.$store);
         }
       } catch (e) {
-        //this.error = e.response.data.message;
         console.log(e);
       }
     },
