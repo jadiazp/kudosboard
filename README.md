@@ -17,12 +17,10 @@ Those 3 steps are only necessary if you are going to set up the environment in a
 
 ##### Standard Steps
 When the docker container will be built, the following steps should be followed:
-1. 
-```php
+1. ```php
 php artisan migrate
 ```
-2. 
-```php
+2. ```php
 php artisan db:seed
 ```
 3. Use any email from the Users table to login into the application, the default password is "password" for all users.
