@@ -16,7 +16,7 @@ const createStore = () => {
       boardInfo: '' as any,
       kudosInfo: '' as any,
       selectedBoard: '' as any,
-      usersList: '' as any
+      usersList: '' as any,
     }),
 
     mutations: {

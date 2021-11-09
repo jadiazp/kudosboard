@@ -49,6 +49,7 @@
 </template>
 
 <script>
+import Pusher from 'pusher-js';
 import Notification from '~/components/Notification';
 export default {
   components: {
@@ -62,12 +63,12 @@ export default {
       userObject: null,
       token: null,
       isLoading: false,
-      isFullPage: true
+      isFullPage: true,
     };
   },
 
-  async mounted(){
-    console.log(this.$store);
+  mounted(){
+
   },
 
   methods: {
@@ -107,7 +108,8 @@ export default {
 
     openLoading() {
       this.isLoading = true;
-    }
+    },
+
   },
 };
 </script>

@@ -68,7 +68,6 @@ class BoardController extends Controller
      */
     public function show($id)
     {
-      //$board = Board::findOrFail($id);
       $results = DB::select("SELECT
       b.title,
       b.description as board_description,
@@ -119,6 +118,61 @@ class BoardController extends Controller
       }
 
       return response()->json($result);
+    }
+
+    public function getOne($id)
+    {
+      $results = DB::select("SELECT
+      b.title,
+      b.description as board_description,
+      u.firstname,
+      u.lastname,
+      k.description,
+      concat(u2.firstname, ' ', u2.lastname) as assigned
+      FROM kudosboard.boards b
+      left join kudosboard.kudos k
+      on b.id = k.idboard
+      left join kudosboard.users u
+      on u.id = k.iduser
+      left join kudosboard.users u2
+      on u2.id = k.iduserto
+      where b.id = " . $id . "
+      order by k.created_at desc
+      limit 1;");
+      $result = [];
+      $kudos = [];
+
+      if($results && count($results) > 0){
+        $board = array(
+          'board_title' => $results[0]->title,
+          'board_description' => $results[0]->board_description,
+        );
+
+        for($x=0;$x<count($results);$x++){
+          if($results[$x]->firstname != null){
+            $assigned = '';
+            if($results[$x]->assigned != null){
+              $assigned = $results[$x]->assigned;
+            }
+            $kudo = [
+              'firstname' => $results[$x]->firstname,
+              'lastname' => $results[$x]->lastname,
+              'description' => $results[$x]->description,
+              'assigned' => $assigned
+            ];
+            array_push($kudos, $kudo);
+          }
+        }
+
+        $data = [
+          'board' => $board,
+          'kudos' => $kudos
+        ];
+
+        array_push($result, $data);
+      }
+
+      return $result;
     }
 
     /**
